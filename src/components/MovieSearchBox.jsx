@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const API_KEY = "d4fa9901";
 const API_URL = "https://www.omdbapi.com/";
@@ -8,6 +8,10 @@ export default function MovieSearchApp() {
   const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchDefaultMovies();
+  }, []);
 
   const fetchMovies = async () => {
     if (!searchTerm) return;
@@ -24,6 +28,18 @@ export default function MovieSearchApp() {
       console.error("Error fetching movies:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchDefaultMovies = async () => {
+    try {
+      const response = await fetch(`${API_URL}?s=batman&apikey=${API_KEY}`);
+      const data = await response.json();
+      if (data.Search) {
+        setMovies(data.Search);
+      }
+    } catch (error) {
+      console.error("Error fetching default movies:", error);
     }
   };
 
@@ -46,6 +62,7 @@ export default function MovieSearchApp() {
   return (
     <div style={{ padding: "20px", maxWidth: "600px", margin: "auto" }}>
       <h1>Movie Search</h1>
+      <p style={{ textAlign: "center", color: "#555", fontSize: "14px" }}>Search for movies, series, or episodes from the OMDb database.</p>
       <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
         <input
           type="text"
